@@ -1,0 +1,94 @@
+Sub Stonks()
+
+Dim ws As Worksheet
+Dim wb As Workbook
+Set wb = ThisWorkbook
+
+
+For Each ws In wb.Worksheets
+
+   ws.Cells(1, 9).Value = "Ticker"
+    ws.Cells(1, 10).Value = "Yearly Change"
+    ws.Cells(1, 11).Value = "Percent Change"
+    ws.Cells(1, 12).Value = "Total Volume"
+
+   
+   ws.Range("A2:A800000").AdvancedFilter xlFilterCopy, CopyToRange:=ws.Range("I2:I800000")
+    
+        With ws.Range("A2:A800000")
+         .Copy .Offset(, 8)
+       
+       End With
+    
+    ws.Range("I1:I800000").RemoveDuplicates Columns:=1, Header:=xlYes
+    
+    MsgBox ("Stocks Worked")
+    
+    
+    Dim rref As Integer
+    rref = 2
+    tot_vol = 0
+    j = 0
+    
+    
+        For i = 2 To Cells(Rows.Count, 1).End(xlUp).Row
+        
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+            tot_vol = tot_vol + ws.Cells(i, 7).Value
+            
+            ws.Cells(rref, 10).Value = ws.Cells(i, 6).Value - ws.Cells(i - j, 3).Value
+            ws.Cells(rref, 10).NumberFormat = "$0.00"
+            
+                If ws.Cells(rref, 10).Value > 0 Then
+                ws.Cells(rref, 10).Interior.ColorIndex = 4
+                
+                Else
+                    ws.Cells(rref, 10).Interior.ColorIndex = 3
+                    
+                End If
+                
+                If ws.Cells(i - j, 3).Value <> 0 Then
+                ws.Cells(rref, 11).Value = ws.Cells(rref, 10).Value / ws.Cells(i - j, 3).Value
+                ws.Cells(rref, 11).NumberFormat = "0.00%"
+                Else
+                    ws.Cells(rref, 11).Value = "0.0%"
+                
+                End If
+                
+                
+                ws.Cells(rref, 12).Value = tot_vol
+                
+                tot_vol = 0
+                
+                rref = rref + 1
+                
+                j = 0
+                
+                
+                If ws.Cells(rref, 10).Value > 0 Then
+                 ws.Cells(rref, 10).Interior.ColorIndex = 4
+                
+                Else
+                    ws.Cells(rref, 10).Interior.ColorIndex = 3
+                    
+                End If
+        
+            Else
+            tot_vol = tot_vol + ws.Cells(i, 7).Value
+            
+            j = j + 1
+            
+            End If
+            
+        Next
+        ws.Cells(i, 11).NumberFormat = "0.0%"
+     Next
+        
+        
+    MsgBox ("Stocks_2 Worked")
+End Sub
+
+
+
+
+
